@@ -1,0 +1,86 @@
+.container {
+  width: 280px;
+  color: #314d3e;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  border-radius: 20px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.api-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  margin-top: 5px;
+}
+
+.api-heading {
+  font-family: "Arial", sans-serif;
+  font-size: 16px;
+  color: #333333;
+  margin-bottom: 5px;
+}
+
+.api-input {
+  width: 90%;
+  border-radius: 10px;
+  border-color: white;
+  outline: none;
+}
+
+.input-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.api-save-button,
+.api-delete-button {
+  padding: 6px 10px; /* Smaller button size */
+  font-size: 12px; /* Smaller text size */
+  font-weight: bold; /* Keep text bold for readability */
+  border-radius: 4px; /* Slightly reduced corner rounding */
+  cursor: pointer; /* Pointer cursor on hover */
+  margin-top: 8px; /* Adjust spacing above the button */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+.api-save-button {
+  color: #ffffff;
+  background-color: #4caf50; /* Green background */
+  border: none;
+}
+
+.api-save-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.03); /* Subtle enlargement on hover */
+}
+
+.api-save-button:active {
+  background-color: #388e3c; /* Even darker green when clicked */
+  transform: scale(1); /* Reset scale */
+}
+
+.api-delete-button {
+  color: #ffffff;
+  background-color: #ff4d4d; /* Red background */
+  border: none;
+}
+
+.api-delete-button:hover {
+  background-color: #cc0000; /* Darker red on hover */
+  transform: scale(1.03); /* Subtle enlargement on hover */
+}
+
+.api-delete-button:active {
+  background-color: #990000; /* Even darker red when clicked */
+  transform: scale(1); /* Reset scale */
+}
