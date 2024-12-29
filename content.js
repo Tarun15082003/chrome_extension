@@ -637,7 +637,7 @@ async function askAiendpoint(message) {
   }
   if (problem_scraped == 0) {
     return {
-      text: "Reload the page couldn't get the problem detials",
+      text: "Oops! Something went wrong. Please switch to another page and come back again.",
       role: "model",
     };
   }

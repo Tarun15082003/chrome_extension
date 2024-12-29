@@ -62,6 +62,8 @@ This Chrome extension is designed to enhance the experience of solving coding pr
 3. Open the chat panel to interact with the AI model.
 4. Provide the required API key in the settings panel.
 
+**Note:** If something goes wrong, please switch to another page and come back again.
+
 ---
 
 ## File Structure
