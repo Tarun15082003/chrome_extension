@@ -85,17 +85,13 @@ This Chrome extension is designed to enhance the experience of solving coding pr
 
 ### 1. Adjustable Chat Panel
 
-_Screenshot of the chat panel being resized._
+![_Screenshot of the chat panel being resized._]["/assets/sc1.png"]
 
 ### 2. Dark Theme
 
 _Screenshot of the extension with dark theme enabled._
 
-### 3. Auto-Scraping Details
-
-_Screenshot showing problem details auto-filled in the chat._
-
-### 4. Loading Animation
+### 3. Loading Animation
 
 _Screenshot of the loading animation displayed during AI response wait time._
 
