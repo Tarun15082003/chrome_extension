@@ -31,20 +31,16 @@ This Chrome extension is designed to enhance the experience of solving coding pr
 
 - The input textbox is disabled after sending a message and remains inactive until a response is received, preventing accidental resubmission.
 
-### 6. Context Provision to Gemini API
-
-- Contextual data is sent to the Gemini API to ensure the AI model has all relevant information for generating accurate responses.
-
-### 7. API Key Management
+### 6. API Key Management
 
 - Users can provide their own API key for authentication.
 - Includes an option to change or update the API key as needed.
 
-### 8. Chat Context Memory
+### 7. Chat Context Memory
 
 - Sends previous chat history along with the current message to the AI model, enabling more contextual and coherent responses.
 
-### 9. Comedic Responses to Irrelevant Questions
+### 8. Comedic Responses to Irrelevant Questions
 
 - The AI can detect irrelevant or off-topic questions and respond with a light-hearted, comedic reply to keep the interaction engaging.
 
