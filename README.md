@@ -85,7 +85,7 @@ This Chrome extension is designed to enhance the experience of solving coding pr
 
 ### 1. Adjustable Chat Panel
 
-![_Screenshot of the chat panel being resized._][assets/sc1.png]
+![_Screenshot of the chat panel being resized._](assets/sc1.png)
 
 ### 2. Dark Theme
 
