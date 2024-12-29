@@ -129,4 +129,4 @@ For any issues or feature requests, please create an issue in the repository or 
 
 ---
 
-Thank you for using the Chrome Extension: AI-Powered Problem Solver! We hope it makes your coding experience more efficient and enjoyable.
+Thank you for using the Chrome Extension: AI-Powered Problem Solver! We hope it makes your coding experience more efficient and enjoyable on maang.in.
