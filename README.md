@@ -21,7 +21,7 @@ This Chrome extension is designed to enhance the experience of solving coding pr
   - **Sample Cases**: Example inputs and outputs for reference.
   - **Hints**: Any hints provided on the problem page.
   - **Editorial Code**: The solution or guide code provided by the platform.
-  - **User Code**: The code that the user has entered so far.
+  - **User Code**: The code that the user has entered so far and answer quesries on that.
 
 ### 4. Loading Animation
 
@@ -43,6 +43,10 @@ This Chrome extension is designed to enhance the experience of solving coding pr
 ### 8. Chat Context Memory
 
 - Sends previous chat history along with the current message to the AI model, enabling more contextual and coherent responses.
+
+### 9. Comedic Responses to Irrelevant Questions
+
+- The AI can detect irrelevant or off-topic questions and respond with a light-hearted, comedic reply to keep the interaction engaging.
 
 ---
 
@@ -86,14 +90,15 @@ This Chrome extension is designed to enhance the experience of solving coding pr
 ### 1. Adjustable Chat Panel
 
 ![_Screenshot of the chat panel being resized._](assets/sc1.png)
+![_Screenshot of the chat panel being resized._](assets/sc2.png)
 
 ### 2. Dark Theme
 
-_Screenshot of the extension with dark theme enabled._
+![_Screenshot of the extension with dark theme enabled._](assets/sc3.png)
 
 ### 3. Loading Animation
 
-_Screenshot of the loading animation displayed during AI response wait time._
+![_Screenshot of the loading animation displayed during AI response wait time._](assets/sc4.png)
 
 ---
 
