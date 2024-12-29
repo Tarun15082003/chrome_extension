@@ -1,6 +1,6 @@
 # Chrome Extension: AI-Powered Problem Solver
 
-This Chrome extension is designed to enhance the experience of solving coding problems by integrating AI assistance and offering a suite of user-friendly features on maang.in. Below is an overview of the project and its features.
+This Chrome extension is designed to enhance the experience of solving coding problems by integrating AI assistance and offering a suite of user-friendly features. Below is an overview of the project and its features.
 
 ## Features
 
@@ -71,10 +71,11 @@ This Chrome extension is designed to enhance the experience of solving coding pr
 ├── manifest.json          # Chrome extension manifest file
 ├── background.js          # Background script for extension
 ├── content.js             # Script for interacting with the problem page
-├── popup.html             # HTML for the extension's popup UI
+├── index.html             # HTML for the extension's popup UI
 ├── popup.js               # Script for handling popup logic
-├── styles.css             # Styling for the extension
+├── popup.css              # Styling for the extension
 ├── utils.js               # Helper functions and utilities
+├── inject.js              # Script injected to override XMLHttpRequest
 └── README.md              # Project documentation (this file)
 ```
 
