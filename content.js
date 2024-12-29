@@ -5,7 +5,8 @@ const gifLoader = chrome.runtime.getURL("/assets/loader.gif");
 const AZ_PROBLEM_KEY = "AZ_PROBLEM_KEY";
 
 let currentPath = window.location.pathname;
-const questionDetails = {};
+let questionDetails = {};
+let problem_scraped = 0;
 let data_theme;
 
 injectScript();
@@ -539,9 +540,9 @@ function createMessageDiv(msg, role, ident = null) {
     }
     textDiv.msgFrom = "model";
   } else {
-    textDiv.style.justifyContent = "#707070";
+    textDiv.style.justifyContent = "flex-end";
     if (data_theme === "dark") {
-      textDiv.style.background = "white";
+      textDiv.style.background = "#707070";
     } else {
       textDiv.style.background = "#EFF4FE";
     }
@@ -606,7 +607,8 @@ function extractProblemName(url) {
 
 function cleanUp() {
   closeChatPanel();
-
+  questionDetails = {};
+  problem_scraped = 0;
   const askAIButton = document.getElementById("doubt-button");
   if (askAIButton) {
     askAIButton.remove();
@@ -633,6 +635,13 @@ async function askAiendpoint(message) {
       role: "model",
     };
   }
+  if (problem_scraped == 0) {
+    return {
+      text: "Reload the page couldn't get the problem detials",
+      role: "model",
+    };
+  }
+
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   const chatHistory = await getMessages();
@@ -730,6 +739,7 @@ function getQuestionDetails(data) {
       ? Object.entries(data["hints"]).map(([key, value]) => `${key}: ${value}`)
       : "No hints";
 
+  problem_scraped = 1;
   // console.log(questionDetails);
 }
 
@@ -763,41 +773,40 @@ function getConsoleCode() {
 function generatePrompt(msg) {
   const consoleCode = getConsoleCode();
   const finalmsg = `
-  '''
-  Description: ${questionDetails.description},
-  Editorial Code: ${questionDetails.editorialCode},
-  Input Format: ${questionDetails.inputFormat},
-  Output Format: ${questionDetails.outputFormat},
-  Sample Test Cases: ${questionDetails.samples},
-  Hints: ${questionDetails.hints} 
-  Code I have written : ${consoleCode}
-  '''
 
-  The text above contains all the details of the question. Follow these steps:
-  1) Carefully read and understand the Description, Input Format, Output Format, Hints, and Editorial Code.
-  2) Use the understood solution to solve the sample test cases and verify the outputs match expectations. Solve the sample cases only with your understanding of the solution and only then verify the outputs.
-  3) Repeat steps 1 and 2 until the question and solution are fully understood.
-  4) Answer only the question asked, using the solution you have understood. Do not describe your understanding.
+    Question Details: '''
+    Description: ${questionDetails.description},
+    Editorial Code: ${questionDetails.editorialCode},
+    Input Format: ${questionDetails.inputFormat},
+    Output Format: ${questionDetails.outputFormat},
+    Sample Test Cases: ${questionDetails.samples},
+    Hints: ${questionDetails.hints} 
+    Code I have written : ${consoleCode}
+    '''
+  
+    Read the Question Detials delimited by triple backticks and follow the mentioned steps.
+    1) Carefully read and understand the Description, Input Format, Output Format, Hints, and Editorial Code provided inside the triple backticks
+    2) Use the understood solution to solve the sample test cases and verify the outputs match expectations. Solve the sample cases only with your understanding of the solution and only then verify the outputs.
+    3) Repeat steps 1 and 2 until the question and solution are fully understood.
+    4) Answer only the question asked, using the solution you have understood. Do not describe your understanding.
+    Your task is to mentor the user in solving the question. Help user in solving the problem on my own by providing hints based on your understanding.
+    Provide the solution only when asked.
 
-  "${msg}"
+  User Question: "${msg}"
 
-  The text above in quotes is the question being asked. Follow these rules:
-- If the text in the quotes is a greeting respond with a greeting. Do not add anything else.
-- Use the "Code I have written" only if I ask queries regarding the code I wrote. 
-- If the question is related to the provided details, respond with the solution derived from your understanding.
-- If the question is unrelated or nonsensical, respond with a humorous or comedic remark. Use the provided examples as refence only and generate your own responses. Examples:
-  - "Ah yes, because clearly, this algorithm holds the secrets to the universe. Step aside, astrophysicists!"
-  - "Sure, let me consult my crystal ball of irrelevant queries for that one."
-  - "Oh, you wanted life advice? Well, I hear sorting algorithms are great for organizing your thoughts."
-  - "Of course, because nothing screams 'coding problem' like a deep dive into existential philosophy."
-  - "Absolutely! This is exactly why they trained me—to tackle unrelated enigmas with grace and a bit of sass."
-- If any required information in the question details is missing or invalid, respond with:
-  -"I couldn't get the question details. Please relaod the Page so that I can try again."
+  The User Question above delimited by quotes is the question being asked by User. 
+  Now answer the question by applying the solution you understood, and following the below mentioned rules. Follow these rules at any cost:
+  1)If the text in the quotes is a greeting respond with a greeting. Do not add anything else.
+  2)Classify the User Question internally as related or unrelated to Question Details, but do not include the classification in your response.
+  4)If the User Question is unrelated, respond with a humorous or comedic remark. Use the provided examples as refence only and generate your own responses. Examples:
+    - Ah yes, because clearly, this algorithm holds the secrets to the universe. Step aside, astrophysicists!
+    - Sure, let me consult my crystal ball of irrelevant queries for that one.
+    - Oh, you wanted life advice? Well, I hear sorting algorithms are great for organizing your thoughts.
+    - Of course, because nothing screams 'coding problem' like a deep dive into existential philosophy.
+    - Absolutely! This is exactly why they trained me—to tackle unrelated enigmas with grace and a bit of sass.
+  5)Use the "Code I have written" only if I ask queries regarding the code I wrote. 
+  6)If the question is related to the provided details, respond with the solution derived from your understanding.
+  `;
 
-  Now answer the question by applying the solution you understood, or with a comedic reply if unrelated.
-
-`;
-
-  // console.log(finalmsg);
   return finalmsg;
 }

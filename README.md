@@ -1,41 +1,134 @@
-# Chrome-Extension-Base-Template
-This is a basic Chrome Extension base template for starting new projects off of initialized with a MIT license.
+# Chrome Extension: AI-Powered Problem Solver
+
+This Chrome extension is designed to enhance the experience of solving coding problems by integrating AI assistance and offering a suite of user-friendly features on maang.in. Below is an overview of the project and its features.
 
 ## Features
-- ..
-- ..
-- ..
 
-## Author
-First Last
-- [Author Website]()
-- [Author Github]()
-- [Project Repository]()
+### 1. Adjustable Size Chat Panel
 
-## Requirements
-### Knowledge
-- HTML
-- CSS
-- Javascript
-- Chrome API
-### Tools
-- Google Chrome Browser
-- IDE or Text Editor of Your Choice
+- Users can resize the chat panel according to their preferences for a more comfortable experience.
 
-## Setup Instructions
-### For Developers
-1. Make a clone of this project, unzipped.
-2. Open Chrome Browser
-3. In a new or blank tab, type in "chrome://extensions/" (without the quotes of course) and click [Enter].
-4. At the top right corner of the page, **enable** "Developer Mode"
-5. Click the button on the page that says "Load Unpacked"
-6. Navigate to your unzipped project folder and select that and hit OK.
-7. You are now ready to start working on the extension! Just make sure you reload after each change you make to see the changes take place.
+### 2. Dark Theme Support
 
-### For End Users
-1. ...
-2. ...
-3. ...
+- A visually appealing dark mode for users who prefer working in low-light environments.
+
+### 3. Auto-Scraping Problem Details
+
+- Automatically scrapes the following elements from the problem page when loaded:
+  - **Problem Statement**: The main description of the problem.
+  - **Input Format**: Specifications of the input structure.
+  - **Output Format**: Details about the expected output.
+  - **Sample Cases**: Example inputs and outputs for reference.
+  - **Hints**: Any hints provided on the problem page.
+  - **Editorial Code**: The solution or guide code provided by the platform.
+  - **User Code**: The code that the user has entered so far.
+
+### 4. Loading Animation
+
+- Displays a visually engaging loading animation when waiting for a response from the AI model.
+
+### 5. Textbox Disabling
+
+- The input textbox is disabled after sending a message and remains inactive until a response is received, preventing accidental resubmission.
+
+### 6. Context Provision to Gemini API
+
+- Contextual data is sent to the Gemini API to ensure the AI model has all relevant information for generating accurate responses.
+
+### 7. API Key Management
+
+- Users can provide their own API key for authentication.
+- Includes an option to change or update the API key as needed.
+
+### 8. Chat Context Memory
+
+- Sends previous chat history along with the current message to the AI model, enabling more contextual and coherent responses.
+
+---
+
+## Installation
+
+1. Clone the repository or download the ZIP file.
+2. Open Chrome and navigate to `chrome://extensions/`.
+3. Enable **Developer Mode**.
+4. Click **Load unpacked** and select the folder containing the extension files.
+
+---
+
+## Usage
+
+1. Open a coding platform supported by the extension.
+2. Load the problem page to automatically scrape problem details.
+3. Open the chat panel to interact with the AI model.
+4. Provide the required API key in the settings panel.
+
+---
+
+## File Structure
+
+```
+.
+├── manifest.json          # Chrome extension manifest file
+├── background.js          # Background script for extension
+├── content.js             # Script for interacting with the problem page
+├── popup.html             # HTML for the extension's popup UI
+├── popup.js               # Script for handling popup logic
+├── styles.css             # Styling for the extension
+├── utils.js               # Helper functions and utilities
+└── README.md              # Project documentation (this file)
+```
+
+---
+
+## Screenshots
+
+### 1. Adjustable Chat Panel
+
+_Screenshot of the chat panel being resized._
+
+### 2. Dark Theme
+
+_Screenshot of the extension with dark theme enabled._
+
+### 3. Auto-Scraping Details
+
+_Screenshot showing problem details auto-filled in the chat._
+
+### 4. Loading Animation
+
+_Screenshot of the loading animation displayed during AI response wait time._
+
+---
+
+## Future Enhancements
+
+- Add support for more coding platforms.
+- Include more customization options for the chat panel.
+- Improve context management for better AI responses.
+
+---
 
 ## License
-Please refer to LICENSE file.
+
+This project is licensed under the MIT License. Feel free to use, modify, and distribute it as needed.
+
+---
+
+## Contribution
+
+We welcome contributions! If you'd like to contribute:
+
+1. Fork the repository.
+2. Create a new branch for your feature/bug fix.
+3. Commit your changes and push the branch.
+4. Open a pull request.
+
+---
+
+## Support
+
+For any issues or feature requests, please create an issue in the repository or contact the maintainer directly.
+
+---
+
+Thank you for using the Chrome Extension: AI-Powered Problem Solver! We hope it makes your coding experience more efficient and enjoyable.
