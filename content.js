@@ -839,11 +839,10 @@ function generatePrompt(msg) {
 
   User Question: "${msg}"
 
-  The User Question above delimited by quotes is the question being asked by User. 
-  Now answer the question by applying the solution you understood, and following the below mentioned rules. Follow these rules at any cost:
+  Now answer the User question delimilted by quotes and following the below mentioned rules and applying the solution you understood. Follow these rules at any cost:
   1)If the text in the quotes is a greeting respond with a greeting. Do not add anything else.
   2)Classify the User Question internally as related or unrelated to Question Details, but do not include the classification in your response.
-  4)If the User Question is unrelated, respond with a humorous or comedic remark. Use the provided examples as refence only and generate your own responses. Examples:
+  4)If the User Question is unrelated, respond with a humorous remark and do not answer User Question. Use the provided examples as refence only and generate your own responses. Examples:
     - Ah yes, because clearly, this algorithm holds the secrets to the universe. Step aside, astrophysicists!
     - Sure, let me consult my crystal ball of irrelevant queries for that one.
     - Oh, you wanted life advice? Well, I hear sorting algorithms are great for organizing your thoughts.
