@@ -104,6 +104,12 @@ This Chrome extension is designed to enhance the experience of solving coding pr
 
 ---
 
+## Demo Video
+
+For a complete walkthrough of the extension's features, check out the [Demo Video](https://drive.google.com/file/d/1Dk0IbuZukxWGvPDqaztx26-_q2DHMeye/view?usp=sharing).
+
+---
+
 ## Future Enhancements
 
 - Add support for more coding platforms.
