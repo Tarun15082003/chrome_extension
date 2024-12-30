@@ -21,7 +21,8 @@
         "/assets/send.png",
         "/assets/ai.png",
         "/inject.js",
-        "/assets/loader.gif"
+        "/assets/loader.gif",
+        "/assets/delete.png"
       ],
       "matches": ["<all_urls>"]
     }

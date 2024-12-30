@@ -44,6 +44,10 @@ This Chrome extension is designed to enhance the experience of solving coding pr
 
 - The AI can detect irrelevant or off-topic questions and respond with a light-hearted, comedic reply to keep the interaction engaging.
 
+### 9. Delete Chat History
+
+- Users can delete the chat history directly within the chat panel, allowing them to start fresh whenever needed.
+
 ---
 
 ## Installation
