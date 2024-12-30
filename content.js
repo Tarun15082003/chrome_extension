@@ -2,6 +2,7 @@ const cancelImageURL = chrome.runtime.getURL("/assets/cancel.png");
 const sendImageURL = chrome.runtime.getURL("/assets/send.png");
 const aiImageURL = chrome.runtime.getURL("/assets/ai.png");
 const gifLoader = chrome.runtime.getURL("/assets/loader.gif");
+const deleteIcon = chrome.runtime.getURL("/assets/delete.png");
 const AZ_PROBLEM_KEY = "AZ_PROBLEM_KEY";
 
 let currentPath = window.location.pathname;
@@ -256,6 +257,16 @@ function populateChatPanel(chatPanel) {
   if (data_theme === "dark") strongElement.style.color = "white";
   header.appendChild(headerContent);
 
+  const headerRight = document.createElement("div");
+  const deleteChat = document.createElement("img");
+  deleteChat.src = deleteIcon;
+  deleteChat.style.height = "25px";
+  deleteChat.style.width = "25px";
+  deleteChat.style.cursor = "pointer";
+  deleteChat.addEventListener("click", async () => {
+    await clearChat();
+  });
+
   const canelButton = document.createElement("img");
   canelButton.src = cancelImageURL;
   canelButton.style.height = "30px";
@@ -264,7 +275,10 @@ function populateChatPanel(chatPanel) {
 
   canelButton.addEventListener("click", closeChatPanel);
 
-  header.append(canelButton);
+  headerRight.appendChild(deleteChat);
+  headerRight.appendChild(canelButton);
+
+  header.append(headerRight);
 
   chatPanel.appendChild(header);
 
@@ -352,7 +366,6 @@ function populateChatPanel(chatPanel) {
 }
 
 async function sendMessage(event) {
-  getConsoleCode();
   const inputElement = event.target.parentNode.firstChild;
   const message = inputElement.value.trim();
   inputElement.value = "";
@@ -595,6 +608,38 @@ function closeChatPanel() {
     console.log("Closing chat Panel ");
     chatPanel.remove();
   }
+}
+
+function clearChat() {
+  const azProblemURL = window.location.href;
+  const uniqueId = extractProblemName(azProblemURL);
+
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["AZ_PROBLEM_KEY"], (result) => {
+      const storedData = result.AZ_PROBLEM_KEY || {};
+
+      if (!storedData[uniqueId]) {
+        storedData[uniqueId] = {
+          url: azProblemURL,
+          chatHistory: [],
+        };
+      }
+
+      storedData[uniqueId].chatHistory = [];
+
+      chrome.storage.local.set({ AZ_PROBLEM_KEY: storedData });
+
+      const displayMessagesBox = document.getElementById(
+        "display-messages-box"
+      );
+      if (displayMessagesBox) {
+        while (displayMessagesBox.firstChild) {
+          displayMessagesBox.removeChild(displayMessagesBox.firstChild);
+        }
+      }
+      resolve("Succesfully Cleared Chat");
+    });
+  });
 }
 
 function extractProblemName(url) {
