@@ -373,71 +373,131 @@ async function sendMessage(event) {
 }
 
 async function addMessageToChatPanel(message) {
-  const sendButton = document.getElementById("send-button");
-  sendButton.style.pointerEvents = "none";
-  sendButton.style.opacity = "0.5";
+  const apiKey = await getapiKey();
 
-  const textInput = document.getElementById("input-text");
-  textInput.disabled = true;
-  textInput.style.cursor = "not-allowed";
-
-  const displayMessagesBox = document.getElementById("display-messages-box");
-
-  const userQuestionObj = {
-    text: message,
-    role: "user",
-  };
-
-  const id = await saveUserMessage(userQuestionObj);
-
-  if (displayMessagesBox) {
-    await refreshMessages(displayMessagesBox);
+  if (!apiKey) {
+    alert("API key is missing. Please enter an API key.");
+    return;
+  }
+  if (problem_scraped == 0) {
+    alert(
+      "Problem scraping failed. Please switch to another page and try again."
+    );
+    return;
   }
 
-  const aiAnswerObj = await getResponse(message);
+  try {
+    const sendButton = document.getElementById("send-button");
+    sendButton.style.pointerEvents = "none";
+    sendButton.style.opacity = "0.5";
 
-  await saveAIResponse(aiAnswerObj, id);
+    const textInput = document.getElementById("input-text");
+    textInput.disabled = true;
+    textInput.style.cursor = "not-allowed";
 
-  if (displayMessagesBox) {
-    await refreshMessages(displayMessagesBox, id);
+    const displayMessagesBox = document.getElementById("display-messages-box");
+
+    const userQuestionObj = {
+      text: message,
+      role: "user",
+    };
+
+    const id = await saveUserMessage(userQuestionObj);
+
+    if (displayMessagesBox) {
+      await refreshMessages(displayMessagesBox);
+    }
+
+    const aiAnswerObj = await getResponse(message);
+
+    await saveAIResponse(aiAnswerObj, id);
+
+    if (displayMessagesBox) {
+      await refreshMessages(displayMessagesBox, id);
+    }
+
+    sendButton.style.pointerEvents = "auto";
+    sendButton.style.opacity = "1";
+    textInput.disabled = false;
+    textInput.style.cursor = "text";
+  } catch (error) {
+    alert(error.message);
+    sendButton.style.pointerEvents = "auto";
+    sendButton.style.opacity = "1";
+    textInput.disabled = false;
+    textInput.style.cursor = "text";
   }
-
-  sendButton.style.pointerEvents = "auto";
-  sendButton.style.opacity = "1";
-  textInput.disabled = false;
-  textInput.style.cursor = "text";
 }
 
-function saveUserMessage(userQuestionObj) {
+async function sendQuestionDetails(storedData) {
   const azProblemURL = window.location.href;
   const uniqueId = extractProblemName(azProblemURL);
 
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["AZ_PROBLEM_KEY"], (result) => {
+  try {
+    const msg = `
+    Question Details: '''
+    Description: ${questionDetails.description},
+    Editorial Code: ${questionDetails.editorialCode},
+    Input Format: ${questionDetails.inputFormat},
+    Output Format: ${questionDetails.outputFormat},
+    Sample Test Cases: ${questionDetails.samples},
+    Hints: ${questionDetails.hints} 
+    '''
+  
+    Your task is to read the Question Details delimited by triple backticks and mentor the user in solving the question when asked following the mentioned steps:
+    1) Carefully read and understand the Description, Input Format, Output Format, Hints, and Editorial Code provided inside the triple backticks.
+    2) Use the understood solution to solve the sample test cases and verify the outputs match expectations. Solve the sample cases only with your understanding of the solution and only then verify the outputs.
+    3) Repeat steps 1 and 2 until the question and solution are fully understood.
+    4) Only answer the user’s question when asked to do so. Do not provide the solution or explain unless the user asks for clarification or help`;
+
+    const userQuestionObj = {
+      text: msg,
+      role: "user",
+    };
+
+    const aiAnswerObj = await sendQuestionDetailsToApi(msg);
+
+    if (!storedData[uniqueId]) {
+      storedData[uniqueId] = {
+        url: azProblemURL,
+        chatHistory: [],
+      };
+    } else {
+      return "Question Details Already Sent";
+    }
+    storedData[uniqueId].chatHistory.push([userQuestionObj, aiAnswerObj]);
+    return "Question Details Sent Successfully";
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function saveUserMessage(userQuestionObj) {
+  const azProblemURL = window.location.href;
+  const uniqueId = extractProblemName(azProblemURL);
+
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(["AZ_PROBLEM_KEY"], async (result) => {
       const storedData = result.AZ_PROBLEM_KEY || {};
 
-      if (!storedData[uniqueId]) {
-        storedData[uniqueId] = {
-          url: azProblemURL,
-          chatHistory: [],
+      try {
+        if (!storedData[uniqueId]) {
+          await sendQuestionDetails(storedData);
+        }
+
+        const aiAnswerObj = {
+          text: "GENERATE_RESPONSE",
+          role: "model",
         };
+
+        storedData[uniqueId].chatHistory.push([userQuestionObj, aiAnswerObj]);
+
+        await chrome.storage.local.set({ AZ_PROBLEM_KEY: storedData });
+
+        resolve(storedData[uniqueId].chatHistory.length);
+      } catch (error) {
+        reject(error);
       }
-
-      const aiAnswerObj = {
-        text: "GENERATE_RESPONSE",
-        role: "model",
-      };
-
-      storedData[uniqueId].chatHistory.push([userQuestionObj, aiAnswerObj]);
-
-      chrome.storage.local.set({ AZ_PROBLEM_KEY: storedData }, () => {
-        // console.log(
-        //   `Updated chatHistory for ${uniqueId}:`,
-        //   storedData[uniqueId].chatHistory
-        // );
-      });
-
-      resolve(storedData[uniqueId].chatHistory.length);
     });
   });
 }
@@ -447,24 +507,12 @@ function saveAIResponse(aiAnswerObj, index) {
   const uniqueId = extractProblemName(azProblemURL);
 
   return new Promise((resolve) => {
-    chrome.storage.local.get(["AZ_PROBLEM_KEY"], (result) => {
+    chrome.storage.local.get(["AZ_PROBLEM_KEY"], async (result) => {
       const storedData = result.AZ_PROBLEM_KEY || {};
-
-      if (!storedData[uniqueId]) {
-        storedData[uniqueId] = {
-          url: azProblemURL,
-          chatHistory: [],
-        };
-      }
 
       storedData[uniqueId].chatHistory[index - 1][1] = aiAnswerObj;
 
-      chrome.storage.local.set({ AZ_PROBLEM_KEY: storedData }, () => {
-        // console.log(
-        //   `Updated chatHistory for ${uniqueId}:`,
-        //   storedData[uniqueId].chatHistory
-        // );
-      });
+      await chrome.storage.local.set({ AZ_PROBLEM_KEY: storedData });
 
       resolve(storedData[uniqueId].chatHistory.length);
     });
@@ -491,12 +539,18 @@ async function refreshMessages(displayMessagesBox, index = null) {
 
     displayMessagesBox.scrollTop = displayMessagesBox.scrollHeight;
   } else {
-    const aiMessageIndex = 2 * (index - 1) + 1;
+    const aiMessageIndex = 2 * (index - 1) - 1;
 
     const aiResponse = messages[index - 1][1]["text"];
 
+    console.log(aiMessageIndex);
+
+    console.log(displayMessagesBox.children);
+
     if (displayMessagesBox.children[aiMessageIndex]) {
+      console.log(aiResponse);
       const child = displayMessagesBox.children[aiMessageIndex].children[0];
+      console.log(child);
 
       while (child.firstChild) {
         child.removeChild(child.firstChild);
@@ -509,7 +563,7 @@ async function refreshMessages(displayMessagesBox, index = null) {
 
 async function populateMessages(displayMessagesBox) {
   const messages = await getMessages();
-  messages.forEach((element) => {
+  messages.slice(1).forEach((element) => {
     const userMsg = element[0]["text"];
     const aiResponse = element[1]["text"];
     displayMessagesBox.appendChild(createMessageDiv(userMsg, 1));
@@ -625,7 +679,7 @@ function clearChat() {
         };
       }
 
-      storedData[uniqueId].chatHistory = [];
+      storedData[uniqueId].chatHistory = [storedData[uniqueId].chatHistory[0]];
 
       chrome.storage.local.set({ AZ_PROBLEM_KEY: storedData });
 
@@ -673,19 +727,6 @@ async function askAiendpoint(message) {
   if (!message) return;
 
   const apiKey = await getapiKey();
-  // console.log(apiKey);
-  if (!apiKey) {
-    return {
-      text: "Please Enter API KEY",
-      role: "model",
-    };
-  }
-  if (problem_scraped == 0) {
-    return {
-      text: "Oops! Something went wrong. Please switch to another page and come back again.",
-      role: "model",
-    };
-  }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
@@ -695,6 +736,9 @@ async function askAiendpoint(message) {
 
   for (let i = 0; i < chatHistory.length - 1; i++) {
     const entry = chatHistory[i];
+    if (entry[1]["role"] == "error") {
+      continue;
+    }
     historyParts.push({
       parts: [{ text: entry[0]["text"] }],
       role: entry[0]["role"],
@@ -742,14 +786,14 @@ async function askAiendpoint(message) {
       console.error("Unexpected response format:", data);
       return {
         text: "Please try again",
-        role: "model",
+        role: "error",
       };
     }
   } catch (error) {
     console.error("Error:", error);
     return {
       text: "Please Try Again",
-      role: "model",
+      role: "error",
     };
   }
 }
@@ -818,39 +862,69 @@ function getConsoleCode() {
 function generatePrompt(msg) {
   const consoleCode = getConsoleCode();
   const finalmsg = `
+User Question: "${msg}"
+Code I have written: ${consoleCode}
 
-    Question Details: '''
-    Description: ${questionDetails.description},
-    Editorial Code: ${questionDetails.editorialCode},
-    Input Format: ${questionDetails.inputFormat},
-    Output Format: ${questionDetails.outputFormat},
-    Sample Test Cases: ${questionDetails.samples},
-    Hints: ${questionDetails.hints} 
-    Code I have written : ${consoleCode}
-    '''
-  
-    Read the Question Detials delimited by triple backticks and follow the mentioned steps.
-    1) Carefully read and understand the Description, Input Format, Output Format, Hints, and Editorial Code provided inside the triple backticks
-    2) Use the understood solution to solve the sample test cases and verify the outputs match expectations. Solve the sample cases only with your understanding of the solution and only then verify the outputs.
-    3) Repeat steps 1 and 2 until the question and solution are fully understood.
-    4) Answer only the question asked, using the solution you have understood. Do not describe your understanding.
-    Your task is to mentor the user in solving the question. Help user in solving the problem on my own by providing hints based on your understanding.
-    Provide the solution only when asked.
+Respond to the User Question (delimited by quotes) based on the following rules. Adhere strictly to these rules under all circumstances:
 
-  User Question: "${msg}"
-
-  Now answer the User question delimilted by quotes and following the below mentioned rules and applying the solution you understood. Follow these rules at any cost:
-  1)If the text in the quotes is a greeting respond with a greeting. Do not add anything else.
-  2)Classify the User Question internally as related or unrelated to Question Details, but do not include the classification in your response.
-  4)If the User Question is unrelated, respond with a humorous remark and do not answer User Question. Use the provided examples as refence only and generate your own responses. Examples:
-    - Ah yes, because clearly, this algorithm holds the secrets to the universe. Step aside, astrophysicists!
-    - Sure, let me consult my crystal ball of irrelevant queries for that one.
-    - Oh, you wanted life advice? Well, I hear sorting algorithms are great for organizing your thoughts.
-    - Of course, because nothing screams 'coding problem' like a deep dive into existential philosophy.
-    - Absolutely! This is exactly why they trained me—to tackle unrelated enigmas with grace and a bit of sass.
-  5)Use the "Code I have written" only if I ask queries regarding the code I wrote. 
-  6)If the question is related to the provided details, respond with the solution derived from your understanding.
-  `;
+1) If the User Question is a greeting, respond with a greeting. Do not include anything else in your response.
+2) Internally classify the User Question as either related or unrelated to the "Code I have written," but do NOT include this classification in your response. 
+3) If the User Question is unrelated to the provided code details:
+   - DO NOT answer the question.
+   - Respond only with a humorous remark. Generate your own humorous responses, but you may use the examples below for inspiration:
+     - "Ah yes, because clearly, this algorithm holds the secrets to the universe. Step aside, astrophysicists!"
+     - "Sure, let me consult my crystal ball of irrelevant queries for that one."
+     - "Oh, you wanted life advice? Well, I hear sorting algorithms are great for organizing your thoughts."
+     - "Of course, because nothing screams 'coding problem' like a deep dive into existential philosophy."
+     - "Absolutely! This is exactly why they trained me—to tackle unrelated enigmas with grace and a bit of sass."
+4) If the User Question is related to the provided code details:
+   - Respond with a solution derived from your understanding of the question and the "Code I have written."
+5) Only use the "Code I have written" for queries related to it.
+6) Never provide answers to unrelated queries—respond with humor instead.
+`;
 
   return finalmsg;
+}
+
+async function sendQuestionDetailsToApi(message) {
+  if (!message) return;
+
+  const apiKey = await getapiKey();
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+  const requestBody = {
+    contents: [
+      {
+        parts: [{ text: message }],
+      },
+    ],
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!response.ok) {
+    alert("You may have entered a wrong api key");
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const candidate = data?.candidates?.[0];
+
+  if (!candidate?.content?.parts?.[0]?.text) {
+    throw new Error("Unexpected response format");
+  }
+
+  console.log(data);
+
+  return {
+    text: marked.parse(candidate.content.parts[0].text.trim()).trim(),
+    role: candidate.content.role || "unknown",
+  };
 }
