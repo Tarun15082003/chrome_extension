@@ -863,23 +863,20 @@ function generatePrompt(msg) {
   const consoleCode = getConsoleCode();
   const finalmsg = `
 User Question: "${msg}"
-Code I have written: ${consoleCode}
+Code written: ${consoleCode}
 
 Respond to the User Question (delimited by quotes) based on the following rules. Adhere strictly to these rules under all circumstances:
 
 1) If the User Question is a greeting, respond with a greeting. Do not include anything else in your response.
 2) Internally classify the User Question as either related or unrelated to the "Code I have written," but do NOT include this classification in your response. 
-3) If the User Question is unrelated to the provided code details:
+3) If the User Question is related to the provided code details:
+   - Respond with a solution derived from your understanding of the question and the "Code written."
+4) Only use the "Code written" for queries related to it.
+5) If the User Question is unrelated to the provided code details:
    - DO NOT answer the question.
    - Respond only with a humorous remark. Generate your own humorous responses, but you may use the examples below for inspiration:
-     - "Ah yes, because clearly, this algorithm holds the secrets to the universe. Step aside, astrophysicists!"
      - "Sure, let me consult my crystal ball of irrelevant queries for that one."
-     - "Oh, you wanted life advice? Well, I hear sorting algorithms are great for organizing your thoughts."
-     - "Of course, because nothing screams 'coding problem' like a deep dive into existential philosophy."
      - "Absolutely! This is exactly why they trained me—to tackle unrelated enigmas with grace and a bit of sass."
-4) If the User Question is related to the provided code details:
-   - Respond with a solution derived from your understanding of the question and the "Code I have written."
-5) Only use the "Code I have written" for queries related to it.
 6) Never provide answers to unrelated queries—respond with humor instead.
 `;
 
