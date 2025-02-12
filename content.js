@@ -145,7 +145,7 @@ function addDoubtButton() {
   //   doubtButton.textContent = "Ask AI";
 
   const targetElement = document.getElementsByClassName(
-    "d-flex flex-row p-0 gap-2 justify-content-between m-0 hide-scrollbar"
+    "coding_nav_bg__HRkIn p-2 nav nav-pills w-100 "
   )[0];
 
   if (targetElement) {
@@ -777,6 +777,7 @@ async function askAiendpoint(message) {
     const data = await response.json();
     // console.log(data);
     const candidate = data?.candidates?.[0];
+    console.log(candidate.content.parts[0].text.trim());
     if (candidate?.content?.parts?.[0]?.text) {
       return {
         text: marked.parse(candidate.content.parts[0].text.trim()).trim(),
@@ -863,15 +864,15 @@ function generatePrompt(msg) {
   const consoleCode = getConsoleCode();
   const finalmsg = `
 User Question: "${msg}"
-Code written: ${consoleCode}
+User code: ${consoleCode}
 
 Respond to the User Question (delimited by quotes) based on the following rules. Adhere strictly to these rules under all circumstances:
 
 1) If the User Question is a greeting, respond with a greeting. Do not include anything else in your response.
 2) Internally classify the User Question as either related or unrelated to the "Code I have written," but do NOT include this classification in your response. 
 3) If the User Question is related to the provided code details:
-   - Respond with a solution derived from your understanding of the question and the "Code written."
-4) Only use the "Code written" for queries related to it.
+   - Respond with a solution derived from your understanding of the question and the "User code."
+4) Only use the "User code" for queries related to it.
 5) If the User Question is unrelated to the provided code details:
    - DO NOT answer the question.
    - Respond only with a humorous remark. Generate your own humorous responses, but you may use the examples below for inspiration:
